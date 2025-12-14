@@ -36,6 +36,7 @@ fun HomeScreen(
     onNavigateToIMC: (Long?) -> Unit,
     onNavigateToHistory: (Long?) -> Unit,
     onNavigateToCalculations: () -> Unit
+
 )
 {
     val viewModel = viewModel<HomeViewModel> {
@@ -53,7 +54,7 @@ fun HomeScreen(
                         is com.eduardoomarson.calculadoraimc.navigation.HistoryRoute -> {
                             onNavigateToHistory(route.id)
                         }
-                        is com.eduardoomarson.calculadoraimc.navigation.CalculationsHubRoute -> {
+                        is com.eduardoomarson.calculadoraimc.navigation.CalculationsRoute -> {
                             onNavigateToCalculations()
                         }
                     }

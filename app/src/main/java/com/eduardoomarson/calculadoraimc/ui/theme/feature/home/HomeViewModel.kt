@@ -4,7 +4,7 @@ import HomeEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eduardoomarson.calculadoraimc.UiEvent
-import com.eduardoomarson.calculadoraimc.navigation.CalculationsHubRoute
+import com.eduardoomarson.calculadoraimc.navigation.CalculationsRoute
 import com.eduardoomarson.calculadoraimc.navigation.HistoryRoute
 import com.eduardoomarson.calculadoraimc.navigation.IMCRoute
 import com.eduardoomarson.calculadoraimc.navigation.TMBRoute
@@ -23,7 +23,7 @@ class HomeViewModel : ViewModel() {
             HomeEvent.OpenCalculations -> {
                 viewModelScope.launch {
                     _uiEvent.send(
-                        UiEvent.Navigate(CalculationsHubRoute)
+                        UiEvent.Navigate(CalculationsRoute)
                     )
                 }
             }

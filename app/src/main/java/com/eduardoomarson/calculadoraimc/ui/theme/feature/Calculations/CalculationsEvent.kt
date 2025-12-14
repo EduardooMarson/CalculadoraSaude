@@ -8,9 +8,11 @@ sealed class CalculationsEvent {
     data class OnGenderChange(val value: String) : CalculationsEvent()
     data class OnActivityLevelChange(val level: String) : CalculationsEvent()
     object Calculate : CalculationsEvent()
+    data class SaveAndNavigateHome(val onSuccess: () -> Unit) : CalculationsEvent()
 }
 
 enum class CalculationsType {
     IMC,
-    TMB
+    TMB,
+    PESO_IDEAL
 }

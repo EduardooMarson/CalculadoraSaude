@@ -7,11 +7,9 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -27,13 +25,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eduardoomarson.calculadoraimc.UiEvent
 import com.eduardoomarson.calculadoraimc.data.HistoryDatabaseProvider
 import com.eduardoomarson.calculadoraimc.data.HistoryRepositoryImpl
-import com.eduardoomarson.calculadoraimc.domain.HistoryIMC
-import com.eduardoomarson.calculadoraimc.domain.historyIMC1
-import com.eduardoomarson.calculadoraimc.domain.historyIMC2
-import com.eduardoomarson.calculadoraimc.ui.theme.Blue
+import com.eduardoomarson.calculadoraimc.domain.History
+import com.eduardoomarson.calculadoraimc.ui.theme.BlackPrimary
 import com.eduardoomarson.calculadoraimc.ui.theme.White
-import com.eduardoomarson.calculadoraimc.ui.theme.components.HistoryItemIMC
-import kotlin.compareTo
+import com.eduardoomarson.calculadoraimc.ui.theme.components.HistoryItemCard
 
 
 @Composable
@@ -78,17 +73,17 @@ fun HistoryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryContent(
-    histories: List<HistoryIMC>,
+    histories: List<History>,
     onEvent: (HistoryEvent) -> Unit,
-    ) {
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Histórico")
+                    Text(text = "Histórico de Cálculos")
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Blue,
+                    containerColor = BlackPrimary,
                     titleContentColor = White
                 )
             )
@@ -100,30 +95,57 @@ fun HistoryContent(
                 .padding(paddingValues),
             contentPadding = PaddingValues(16.dp)
         ) {
-            itemsIndexed(histories){index, history ->
-                HistoryItemIMC(
-                    historyIMC = history,
+            itemsIndexed(histories) { index, history ->
+                HistoryItemCard(
+                    history = history,
                     onItemClick = { },
                     onDeleteClick = {
                         onEvent(HistoryEvent.Delete(history.id))
                     }
                 )
 
-                if(index < histories.lastIndex){
-                    Spacer(modifier = Modifier.height(8.dp))
+                if (index < histories.lastIndex) {
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
         }
     }
 }
 
-
-
 @Preview
 @Composable
-fun HistoyPreview() {
-    HistoryContent (
-        histories = listOf(historyIMC1, historyIMC2),
-        onEvent = { }
+fun HistoryPreview() {
+    HistoryContent(
+        histories = listOf(
+            History(
+                id = 1,
+                date = "14/12/2024",
+                hour = "15:30",
+                gender = "Masculino",
+                age = "25",
+                height = "175",
+                weight = "70",
+                physicalActivities = "Moderado",
+                imcDescription = "IMC: 22.9\nPeso normal",
+                tmbDescription = "TMB: 1750 kcal/dia",
+                pesoIdealDescription = null,
+                caloriaDiariaDescription = "2713 kcal/dia"
+            ),
+            History(
+                id = 2,
+                date = "13/12/2024",
+                hour = "10:15",
+                gender = "Feminino",
+                age = "30",
+                height = "165",
+                weight = null,
+                physicalActivities = null,
+                imcDescription = null,
+                tmbDescription = null,
+                pesoIdealDescription = "Peso Ideal (média): 58.5 kg\n\nFórmulas individuais:\n• Devine: 55.2 kg\n• Robinson: 57.8 kg\n• Miller: 62.5 kg",
+                caloriaDiariaDescription = null
+            )
+        ),
+        onEvent = {}
     )
 }

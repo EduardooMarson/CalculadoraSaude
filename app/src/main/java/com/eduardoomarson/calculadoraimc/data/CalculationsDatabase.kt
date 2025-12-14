@@ -6,10 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [HistoryIMCEntity::class],
-    version = 1,
+    entities = [ HistoryEntity::class],
+    version = 2,
+    exportSchema = false
 
-    )
+)
 abstract class CalculationsDatabase: RoomDatabase() {
 
     abstract val historyDao: HistoryDao
@@ -26,7 +27,9 @@ object HistoryDatabaseProvider {
                 context.applicationContext,
                 CalculationsDatabase::class.java,
                 "calculations-app"
-            ).build()
+            )
+                .fallbackToDestructiveMigration() // Claude: Apaga banco ao mudar de versão
+                .build()
             INSTANCE = instance
             instance
         }

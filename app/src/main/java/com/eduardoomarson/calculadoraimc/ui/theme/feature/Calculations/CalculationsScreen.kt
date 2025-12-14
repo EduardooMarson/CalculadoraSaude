@@ -37,26 +37,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eduardoomarson.calculadoraimc.data.HistoryRepository
 import com.eduardoomarson.calculadoraimc.ui.theme.BlackPrimary
 import com.eduardoomarson.calculadoraimc.ui.theme.GraySurface
 import com.eduardoomarson.calculadoraimc.ui.theme.OrangePrimary
 import com.eduardoomarson.calculadoraimc.ui.theme.White
 import com.eduardoomarson.calculadoraimc.ui.theme.components.ActivityButton
-import com.eduardoomarson.calculadoraimc.ui.theme.components.NextCalculationCard
-import com.eduardoomarson.calculadoraimc.ui.theme.feature.tmb.GenderButton
+import com.eduardoomarson.calculadoraimc.ui.theme.components.GenderButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalculatorScreen(
     navigateBack: (() -> Unit)? = null,
     navigateHome: () -> Unit,
-    onNavigateToIdealWeight: () -> Unit = {}
+    onNavigateToIdealWeight: () -> Unit = {},
+    repository: HistoryRepository
 ) {
-    val viewModel: CalculationsViewModel = viewModel()
+    val viewModel: CalculationsViewModel = remember { CalculationsViewModel(repository) }
     val state by viewModel.state
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -73,6 +72,7 @@ fun CalculatorScreen(
                         text = when (state.calculationType) {
                             CalculationsType.IMC -> "Índice de Massa Corporal"
                             CalculationsType.TMB -> "Taxa Metabólica Basal"
+                            CalculationsType.PESO_IDEAL -> "Peso Ideal"
                         },
                         fontWeight = FontWeight.Bold
                     )
@@ -93,7 +93,7 @@ fun CalculatorScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(20.dp)
         ) {
-            // Tipo de cálculo (IMC / TMB)
+            // Tipo de cálculo (IMC / TMB / PESO IDEAL)
             CalculationsTypeSelector(
                 selectedType = state.calculationType,
                 onTypeSelected = { type ->
@@ -103,7 +103,7 @@ fun CalculatorScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Altura (comum aos dois)
+            // Altura (comum a todos)
             OutlinedTextField(
                 value = state.height,
                 onValueChange = { viewModel.onEvent(CalculationsEvent.OnHeightChange(it)) },
@@ -120,24 +120,26 @@ fun CalculatorScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // Peso (apenas para IMC e TMB, não para Peso Ideal)
+            if (state.calculationType != CalculationsType.PESO_IDEAL) {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            // Peso (comum aos dois)
-            OutlinedTextField(
-                value = state.weight,
-                onValueChange = { viewModel.onEvent(CalculationsEvent.OnWeightChange(it)) },
-                label = { Text("Peso (kg)") },
-                placeholder = { Text("Ex: 70.5") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                isError = state.isError && state.weight.isEmpty(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = OrangePrimary,
-                    focusedLabelColor = OrangePrimary,
-                    cursorColor = OrangePrimary,
-                    unfocusedBorderColor = BlackPrimary.copy(alpha = 0.4f)
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
+                OutlinedTextField(
+                    value = state.weight,
+                    onValueChange = { viewModel.onEvent(CalculationsEvent.OnWeightChange(it)) },
+                    label = { Text("Peso (kg)") },
+                    placeholder = { Text("Ex: 70.5") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    isError = state.isError && state.weight.isEmpty(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = OrangePrimary,
+                        focusedLabelColor = OrangePrimary,
+                        cursorColor = OrangePrimary,
+                        unfocusedBorderColor = BlackPrimary.copy(alpha = 0.4f)
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             // Mostrar campos específicos do TMB
             if (state.calculationType == CalculationsType.TMB) {
@@ -234,6 +236,37 @@ fun CalculatorScreen(
                 }
             }
 
+            // Campos específicos do Peso Ideal (Sexo)
+            if (state.calculationType == CalculationsType.PESO_IDEAL) {
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Sexo biológico",
+                    fontWeight = FontWeight.Bold,
+                    color = BlackPrimary
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    GenderButton(
+                        text = "Masculino",
+                        selected = state.gender == "Masculino",
+                        onClick = { viewModel.onEvent(CalculationsEvent.OnGenderChange("Masculino")) },
+                        modifier = Modifier.weight(1f)
+                    )
+                    GenderButton(
+                        text = "Feminino",
+                        selected = state.gender == "Feminino",
+                        onClick = { viewModel.onEvent(CalculationsEvent.OnGenderChange("Feminino")) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             // Botão calcular
@@ -283,8 +316,10 @@ fun CalculatorScreen(
             }
 
             // Resultado TMB
-            if (state.calculationType == CalculationsType.TMB && state.result.isNotEmpty()) {
+            if (state.calculationType == CalculationsType.TMB && state.tmbDescription.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // Card TMB
                 Card(
                     colors = CardDefaults.cardColors(containerColor = GraySurface),
                     shape = RoundedCornerShape(20.dp),
@@ -295,13 +330,13 @@ fun CalculatorScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Resultado",
+                            text = "Taxa Metabólica Basal",
                             fontWeight = FontWeight.Bold,
                             color = BlackPrimary
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = state.result,
+                            text = state.tmbDescription,
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
                             color = OrangePrimary,
@@ -314,23 +349,87 @@ fun CalculatorScreen(
                         )
                     }
                 }
+
+                // Card de Necessidade Calórica Diária
+                if (state.dailyCalories.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = OrangePrimary.copy(alpha = 0.15f)),
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Necessidade Calórica Diária",
+                                fontWeight = FontWeight.Bold,
+                                color = BlackPrimary,
+                                fontSize = 14.sp
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = state.dailyCalories,
+                                fontSize = 26.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = OrangePrimary,
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = "Nível de atividade: ${state.activityLevel}",
+                                fontSize = 12.sp,
+                                color = BlackPrimary.copy(alpha = 0.7f),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
             }
 
-            // Próximos cálculos
-            if (state.imcDescription.isNotEmpty() || state.result.isNotEmpty()) {
+            // Resultado Peso Ideal
+            if (state.calculationType == CalculationsType.PESO_IDEAL && state.idealWeightResult.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = GraySurface),
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+                        Text(
+                            text = state.idealWeightResult,
+                            fontSize = 14.sp,
+                            color = BlackPrimary,
+                            lineHeight = 22.sp
+                        )
+                    }
+                }
+            }
+
+            // Próximos cálculos / Salvar
+            if (state.imcDescription.isNotEmpty() || state.tmbDescription.isNotEmpty() || state.idealWeightResult.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(24.dp))
-                Text(
-                    text = "Próximos cálculos",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                NextCalculationCard(
-                    title = "Peso Ideal",
-                    subtitle = "Descubra qual é o seu peso ideal",
-                    icon = Icons.Default.FitnessCenter,
-                    onClick = onNavigateToIdealWeight
-                )
+
+                Button(
+                    onClick = {
+                        viewModel.onEvent(CalculationsEvent.SaveAndNavigateHome(onSuccess = navigateHome))
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = BlackPrimary),
+                    enabled = !state.isSaving,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text(
+                        text = if (state.isSaving) "SALVANDO..." else "SALVAR E VOLTAR PARA HOME",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = White
+                    )
+                }
             }
         }
     }
@@ -342,100 +441,44 @@ fun CalculationsTypeSelector(
     onTypeSelected: (CalculationsType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Button(
-            onClick = { onTypeSelected(CalculationsType.IMC) },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (selectedType == CalculationsType.IMC) OrangePrimary else GraySurface,
-                contentColor = if (selectedType == CalculationsType.IMC) White else BlackPrimary
-            ),
-            modifier = Modifier.weight(1f)
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text("IMC")
+            Button(
+                onClick = { onTypeSelected(CalculationsType.IMC) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedType == CalculationsType.IMC) OrangePrimary else GraySurface,
+                    contentColor = if (selectedType == CalculationsType.IMC) White else BlackPrimary
+                ),
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("IMC")
+            }
+            Button(
+                onClick = { onTypeSelected(CalculationsType.TMB) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedType == CalculationsType.TMB) OrangePrimary else GraySurface,
+                    contentColor = if (selectedType == CalculationsType.TMB) White else BlackPrimary
+                ),
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("TMB")
+            }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Button(
-            onClick = { onTypeSelected(CalculationsType.TMB) },
+            onClick = { onTypeSelected(CalculationsType.PESO_IDEAL) },
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (selectedType == CalculationsType.TMB) OrangePrimary else GraySurface,
-                contentColor = if (selectedType == CalculationsType.TMB) White else BlackPrimary
+                containerColor = if (selectedType == CalculationsType.PESO_IDEAL) OrangePrimary else GraySurface,
+                contentColor = if (selectedType == CalculationsType.PESO_IDEAL) White else BlackPrimary
             ),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text("TMB")
+            Text("PESO IDEAL")
         }
     }
-}
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun CalculatorScreenPreview() {
-    CalculatorScreen(
-        navigateBack = {},
-        navigateHome = {},
-        onNavigateToIdealWeight = {}
-    )
-}
-
-@Preview(showBackground = true, name = "IMC Calculado")
-@Composable
-fun CalculatorScreenIMCResultPreview() {
-    // Criar um ViewModel mockado com estado preenchido
-    val mockViewModel = CalculationsViewModel().apply {
-        onEvent(CalculationsEvent.OnHeightChange("170"))
-        onEvent(CalculationsEvent.OnWeightChange("70"))
-        onEvent(CalculationsEvent.Calculate)
-    }
-
-    CalculatorScreen(
-        navigateBack = {},
-        navigateHome = {},
-        onNavigateToIdealWeight = {}
-    )
-}
-
-@Preview(showBackground = true, name = "TMB Selecionado")
-@Composable
-fun CalculatorScreenTMBPreview() {
-    val mockViewModel = CalculationsViewModel().apply {
-        onEvent(CalculationsEvent.SetCalculationType(CalculationsType.TMB))
-        onEvent(CalculationsEvent.OnHeightChange("175"))
-        onEvent(CalculationsEvent.OnWeightChange("80"))
-        onEvent(CalculationsEvent.OnAgeChange("30"))
-        onEvent(CalculationsEvent.OnGenderChange("Masculino"))
-        onEvent(CalculationsEvent.OnActivityLevelChange("Moderado"))
-    }
-
-    CalculatorScreen(
-        navigateBack = {},
-        navigateHome = {},
-        onNavigateToIdealWeight = {}
-    )
-}
-
-@Preview(showBackground = true, name = "Erro de Validação")
-@Composable
-fun CalculatorScreenErrorPreview() {
-    val mockViewModel = CalculationsViewModel().apply {
-        onEvent(CalculationsEvent.Calculate) // Tentar calcular sem preencher
-    }
-
-    CalculatorScreen(
-        navigateBack = {},
-        navigateHome = {},
-        onNavigateToIdealWeight = {}
-    )
-}
-
-@Preview(showBackground = true, name = "Type Selector")
-@Composable
-fun CalculationsTypeSelectorPreview() {
-    CalculationsTypeSelector(
-        selectedType = CalculationsType.IMC,
-        onTypeSelected = {}
-    )
 }

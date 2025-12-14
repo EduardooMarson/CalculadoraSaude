@@ -5,11 +5,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.eduardoomarson.calculadoraimc.ui.theme.feature.CalculationsHubScreen.CalculationsHubScreen
+import com.eduardoomarson.calculadoraimc.data.HistoryRepository
+import com.eduardoomarson.calculadoraimc.ui.theme.feature.Calculations.CalculatorScreen
 import com.eduardoomarson.calculadoraimc.ui.theme.feature.history.HistoryScreen
 import com.eduardoomarson.calculadoraimc.ui.theme.feature.home.HomeScreen
-import com.eduardoomarson.calculadoraimc.ui.theme.feature.imc.IMCScreen
-import com.eduardoomarson.calculadoraimc.ui.theme.feature.tmb.TMBScreen
+
 import kotlinx.serialization.Serializable
 
 /* ---------- ROTAS ---------- */
@@ -27,13 +27,15 @@ data class IMCRoute(val id: Long? = null)
 data class TMBRoute(val id: Long? = null)
 
 @Serializable
-object CalculationsHubRoute
+object CalculationsRoute
 
 
 /* ---------- NAV HOST ---------- */
 
 @Composable
-fun CalculationsNavHost() {
+fun CalculationsNavHost(
+    repository: HistoryRepository // Injete o repository aqui
+) {
     val navController = rememberNavController()
 
     NavHost(
@@ -47,49 +49,14 @@ fun CalculationsNavHost() {
                 onNavigateToIMC = { id -> navController.navigate(IMCRoute(id)) },
                 onNavigateToHistory = { id -> navController.navigate(HistoryRoute(id)) },
                 onNavigateToCalculations = {
-                    navController.navigate(CalculationsHubRoute)
+                    navController.navigate(CalculationsRoute)
                 }
             )
         }
 
-
-        /* ---------- IMC ---------- */
-        composable<IMCRoute> { backStackEntry ->
-            val route = backStackEntry.toRoute<IMCRoute>()
-
-            IMCScreen(
-                id = route.id,
-                navigateBack = {
-                    navController.popBackStack()
-                },
-                navigateToTMB = {
-                    navController.navigate(TMBRoute())
-                },
-                navigateHome = {
-                    navController.navigate(HomeRoute) {
-                        popUpTo(HomeRoute) { inclusive = true }
-                    }
-                }
-            )
-        }
-
-        composable<CalculationsHubRoute> {
-            CalculationsHubScreen(
-                navigateToIMC = { navController.navigate(IMCRoute()) },
-                navigateToTMB = { navController.navigate(TMBRoute()) },
-                navigateBack = { navController.popBackStack() },
-                navigateToHistory = { navController.navigate(HistoryRoute()) } // tirar o TODO()
-            )
-        }
-
-
-
-        /* ---------- TMB ---------- */
-        composable<TMBRoute> { backStackEntry ->
-            val route = backStackEntry.toRoute<TMBRoute>()
-
-            TMBScreen(
-                id = route.id,
+        /* ---------- CALCULATIONS (Nova tela unificada) ---------- */
+        composable<CalculationsRoute> {
+            CalculatorScreen(
                 navigateBack = {
                     navController.popBackStack()
                 },
@@ -97,9 +64,13 @@ fun CalculationsNavHost() {
                     navController.navigate(HomeRoute) {
                         popUpTo(HomeRoute) { inclusive = true }
                     }
-                }
+                },
+                onNavigateToIdealWeight = {
+                },
+                repository = repository
             )
         }
+
 
         /* ---------- HISTÓRICO ---------- */
         composable<HistoryRoute> { backStackEntry ->

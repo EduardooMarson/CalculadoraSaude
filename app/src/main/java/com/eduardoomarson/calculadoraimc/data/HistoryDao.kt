@@ -11,14 +11,16 @@ import kotlinx.coroutines.flow.Flow
 interface HistoryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(entity: HistoryIMCEntity)
+    suspend fun insert(entity: HistoryEntity)
 
     @Delete
-    suspend fun delete(entity: HistoryIMCEntity)
+    suspend fun delete(entity: HistoryEntity)
 
-    @Query("SELECT * from historiesImc")
-    fun getAll(): Flow<List<HistoryIMCEntity>>
 
-    @Query("SELECT * from historiesImc WHERE id = :id")
-    suspend fun getBy(id: Long) : HistoryIMCEntity?
+    @Query("SELECT * from histories")
+    fun getAll(): Flow<List<HistoryEntity>>
+
+    @Query("SELECT * from histories WHERE id = :id")
+    suspend fun getBy(id: Long) : HistoryEntity?
+
 }

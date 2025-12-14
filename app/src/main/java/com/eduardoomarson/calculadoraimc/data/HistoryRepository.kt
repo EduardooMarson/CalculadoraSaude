@@ -1,21 +1,28 @@
 package com.eduardoomarson.calculadoraimc.data
 
-import com.eduardoomarson.calculadoraimc.domain.HistoryIMC
+import com.eduardoomarson.calculadoraimc.domain.History
 import kotlinx.coroutines.flow.Flow
 
 interface HistoryRepository {
 
-    suspend fun insertIMC(
+    suspend fun insert(
         date: String,
         hour: String,
-        weight: String,
+        gender: String?,
+        age: String?,
         height: String,
-        imcDescription: String
+        weight: String?,
+        physicalActivities: String?,
+        imcDescription: String?,
+        tmbDescription: String?,
+        pesoIdealDescription: String?,
+        caloriaDiariaDescription: String?
     )
 
     suspend fun delete(id: Long)
 
-    fun getAll(): Flow<List<HistoryIMC>>
+    fun getAll(): Flow<List<History>>
 
-    suspend fun getBy(id: Long) : HistoryIMC?
+    suspend fun getBy(id: Long) : History?
+
 }
