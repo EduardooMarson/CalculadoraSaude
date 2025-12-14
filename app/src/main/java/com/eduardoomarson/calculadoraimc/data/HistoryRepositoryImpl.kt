@@ -14,13 +14,14 @@ class HistoryRepositoryImpl(
         height: String,
         imcDescription: String
     ) {
-        HistoryIMCEntity(
+        val entity = HistoryIMCEntity(
             date = date,
             hour = hour,
             weight = weight,
             height = height,
             imcDescription = imcDescription
         )
+        dao.insert(entity)
     }
 
     override suspend fun delete(id: Long) {

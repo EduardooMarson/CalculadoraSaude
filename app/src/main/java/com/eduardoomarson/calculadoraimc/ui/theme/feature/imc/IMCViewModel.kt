@@ -118,18 +118,21 @@ class IMCViewModel(
     }
 
     private fun saveIMCHistory() {
-        // Sugestão Claude
         if (imcDescription.isEmpty()) {
             viewModelScope.launch {
                 _uiEvent.send(UiEvent.ShowSnackbar("Calcule o IMC primeiro!"))
             }
             return
         }
-        // Sugestão Claude
 
         viewModelScope.launch {
-            repository.insertIMC(date, hour, weight, height, imcDescription)
+            try {
+                repository.insertIMC(date, hour, weight, height, imcDescription)
+                _uiEvent.send(UiEvent.NavigateBack)
+            } catch (e: Exception) {
+                _uiEvent.send(UiEvent.ShowSnackbar("Erro ao salvar: ${e.message}"))
             }
         }
+    }
 }
 
