@@ -23,13 +23,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.eduardoomarson.calculadoraimc.domain.History
 import com.eduardoomarson.calculadoraimc.domain.HistoryIMC
+import com.eduardoomarson.calculadoraimc.domain.history1
 import com.eduardoomarson.calculadoraimc.domain.historyIMC1
 
 
 @Composable
-fun HistoryItemIMC(
-    historyIMC: HistoryIMC,
+fun HistoryItem(
+    history: History,
     onItemClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -57,14 +59,14 @@ fun HistoryItemIMC(
             ) {
 
                 Text(
-                    text = "Data : ${historyIMC.date}",
+                    text = "Data : ${history.date}",
                     style = MaterialTheme.typography.bodyLarge
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Text(
-                    text = "Hora:  ${historyIMC.hour} h",
+                    text = "Hora:  ${history.hour} h",
                     style = MaterialTheme.typography.bodyLarge
                 )
 
@@ -75,13 +77,15 @@ fun HistoryItemIMC(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = historyIMC.imcDescription,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.weight(1f)
-                )
+                history.imcDescription?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
 
                 IconButton(
                     onClick = onDeleteClick
@@ -100,9 +104,9 @@ fun HistoryItemIMC(
 
 @Preview
 @Composable
-private fun HistoryItemIMCPreview() {
-        HistoryItemIMC(
-            historyIMC = historyIMC1,
+private fun HistoryItemPreview() {
+        HistoryItem(
+            history = history1,
             onItemClick = { },
             onDeleteClick = { },
             modifier = Modifier,

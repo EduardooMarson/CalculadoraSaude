@@ -7,11 +7,9 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -27,13 +25,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eduardoomarson.calculadoraimc.UiEvent
 import com.eduardoomarson.calculadoraimc.data.HistoryDatabaseProvider
 import com.eduardoomarson.calculadoraimc.data.HistoryRepositoryImpl
-import com.eduardoomarson.calculadoraimc.domain.HistoryIMC
-import com.eduardoomarson.calculadoraimc.domain.historyIMC1
-import com.eduardoomarson.calculadoraimc.domain.historyIMC2
+import com.eduardoomarson.calculadoraimc.domain.History
+import com.eduardoomarson.calculadoraimc.domain.history1
 import com.eduardoomarson.calculadoraimc.ui.theme.Blue
 import com.eduardoomarson.calculadoraimc.ui.theme.White
-import com.eduardoomarson.calculadoraimc.ui.theme.components.HistoryItemIMC
-import kotlin.compareTo
+import com.eduardoomarson.calculadoraimc.ui.theme.components.HistoryCard
+
 
 
 @Composable
@@ -78,7 +75,7 @@ fun HistoryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryContent(
-    histories: List<HistoryIMC>,
+    histories: List<History>,
     onEvent: (HistoryEvent) -> Unit,
     ) {
     Scaffold(
@@ -101,15 +98,14 @@ fun HistoryContent(
             contentPadding = PaddingValues(16.dp)
         ) {
             itemsIndexed(histories){index, history ->
-                HistoryItemIMC(
-                    historyIMC = history,
-                    onItemClick = { },
+                HistoryCard(
+                    history = history,
                     onDeleteClick = {
                         onEvent(HistoryEvent.Delete(history.id))
                     }
                 )
 
-                if(index < histories.lastIndex){
+                if (index < histories.lastIndex) {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
@@ -123,7 +119,7 @@ fun HistoryContent(
 @Composable
 fun HistoyPreview() {
     HistoryContent (
-        histories = listOf(historyIMC1, historyIMC2),
+        histories = listOf(history1),
         onEvent = { }
     )
 }
