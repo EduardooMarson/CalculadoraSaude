@@ -11,6 +11,6 @@ data class HistoryIMCEntity(
     val hour: String,
     val weight: String,
     val height: String,
-    val imcDescription: String,
+    val imcDescription: String
 )
 

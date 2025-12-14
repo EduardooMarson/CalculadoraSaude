@@ -13,6 +13,7 @@ class HistoryRepositoryImpl(
         weight: String,
         height: String,
         imcDescription: String
+
     ) {
         val entity = HistoryIMCEntity(
             date = date,
@@ -39,6 +40,7 @@ class HistoryRepositoryImpl(
                     weight = entity.weight,
                     height = entity.height,
                     imcDescription = entity.imcDescription
+
                 )
             }
         }
@@ -53,6 +55,7 @@ class HistoryRepositoryImpl(
                 weight = entity.weight,
                 height = entity.height,
                 imcDescription = entity.imcDescription
+
             )
         }
     }

@@ -48,6 +48,7 @@ import com.eduardoomarson.calculadoraimc.ui.theme.BlackPrimary
 import com.eduardoomarson.calculadoraimc.ui.theme.GraySurface
 import com.eduardoomarson.calculadoraimc.ui.theme.OrangePrimary
 import com.eduardoomarson.calculadoraimc.ui.theme.WhitePrimary
+import com.eduardoomarson.calculadoraimc.ui.theme.components.ActivityButton
 import com.eduardoomarson.calculadoraimc.ui.theme.feature.tbm.TBMViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -258,6 +259,42 @@ fun TMBContent(
                             fontSize = 12.sp,
                             color = BlackPrimary.copy(alpha = 0.6f)
                         )
+                    }
+                }
+                /* ---------- FATOR ATIVIDADE ---------- */
+                Text(
+                    text = "Nível de atividade física",
+                    fontWeight = FontWeight.Bold,
+                    color = BlackPrimary
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val activityLevel = null
+                    ActivityButton("Sedentário", activityLevel == "Sedentário") {
+                        onEvent(TMBEvent.OnActivityLevelChange("Sedentário"))
+                    }
+                    ActivityButton("Leve", activityLevel == "Leve") {
+                        onEvent(TMBEvent.OnActivityLevelChange("Leve"))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val activityLevel = null
+                    ActivityButton("Moderado", activityLevel == "Moderado") {
+                        onEvent(TMBEvent.OnActivityLevelChange("Moderado"))
+                    }
+                    ActivityButton("Intenso", activityLevel == "Intenso") {
+                        onEvent(TMBEvent.OnActivityLevelChange("Intenso"))
                     }
                 }
 

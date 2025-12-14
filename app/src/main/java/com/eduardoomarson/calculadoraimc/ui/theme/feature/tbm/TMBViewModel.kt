@@ -28,6 +28,12 @@ class TBMViewModel : ViewModel() {
     var isError by mutableStateOf(false)
         private set
 
+    var activityLevel by mutableStateOf("Sedentário")
+        private set
+
+    var totalCalories by mutableStateOf("")
+        private set
+
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
@@ -37,6 +43,9 @@ class TBMViewModel : ViewModel() {
             is TMBEvent.OnHeightChange -> height = event.value
             is TMBEvent.OnAgeChange -> age = event.value
             is TMBEvent.OnGenderChange -> gender = event.value
+            is TMBEvent.OnActivityLevelChange -> activityLevel = event.value
+
+
 
             TMBEvent.CalculateTBM -> calculateTBM()
         }
