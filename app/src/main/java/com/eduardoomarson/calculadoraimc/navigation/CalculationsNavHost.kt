@@ -6,8 +6,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.eduardoomarson.calculadoraimc.ui.theme.feature.history.HistoryScreen
+import com.eduardoomarson.calculadoraimc.ui.theme.feature.home.HomeScreen
 import com.eduardoomarson.calculadoraimc.ui.theme.feature.imc.IMCScreen
 import kotlinx.serialization.Serializable
+
+@Serializable
+object HomeRoute
 
 @Serializable
 data class HistoryRoute(val id: Long?= null)
@@ -20,18 +24,26 @@ fun CalculationsNavHost() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = IMCRoute()
+        startDestination = HomeRoute
     ) {
+
+        composable<HomeRoute> {
+            HomeScreen(
+                onNavigateToIMC = { id ->
+                    navController.navigate(IMCRoute(id = id))
+                },
+                onNavigateToHistory = { id ->
+                    navController.navigate(HistoryRoute(id = id))
+                }
+
+                // Adicione as outras navegações conforme implementar TMB, etc.
+            )
+        }
 
         composable<IMCRoute>{ backStackEntry ->
             val imcRoute = backStackEntry.toRoute<IMCRoute>()
             IMCScreen(
                 id = imcRoute.id,
-                //Sugestão Claude
-                navigateToHistoryScreen = { id ->
-                    navController.navigate(HistoryRoute(id = id))
-                },
-                // Fim sugestão Claude
                 navigateBack = {
                     navController.popBackStack()
                 }

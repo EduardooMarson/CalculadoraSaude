@@ -41,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eduardoomarson.calculadoraimc.UiEvent
 import com.eduardoomarson.calculadoraimc.data.HistoryDatabaseProvider
 import com.eduardoomarson.calculadoraimc.data.HistoryRepositoryImpl
+import com.eduardoomarson.calculadoraimc.navigation.IMCRoute
 import com.eduardoomarson.calculadoraimc.ui.theme.Blue
 import com.eduardoomarson.calculadoraimc.ui.theme.Red
 import com.eduardoomarson.calculadoraimc.ui.theme.White
@@ -49,7 +50,6 @@ import com.eduardoomarson.calculadoraimc.ui.theme.White
 @Composable
 fun IMCScreen(
     id: Long? = null,
-    navigateToHistoryScreen: ((Long?) -> Unit)? = null,
     navigateBack: (() -> Unit)? = null
 ) {
     val context = LocalContext.current.applicationContext
@@ -76,9 +76,11 @@ fun IMCScreen(
                         message = uiEvent.message
                     )
                 }
-                is UiEvent.Navigate<*> -> TODO()
+                is UiEvent.Navigate<*> -> {
+                    
+                }
                 UiEvent.NavigateBack -> {
-                    // navigateBack()
+                    navigateBack?.invoke()
                 }
             }
         }

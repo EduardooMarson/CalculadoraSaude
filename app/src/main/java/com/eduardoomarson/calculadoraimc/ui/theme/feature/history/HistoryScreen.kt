@@ -60,7 +60,9 @@ fun HistoryScreen(
         viewModel.uiEvent.collect { uiEvent ->
             when (uiEvent) {
                 is UiEvent.Navigate<*> -> TODO()
-                UiEvent.NavigateBack -> TODO()
+                UiEvent.NavigateBack -> {
+                    //navigateBack?.invoke()
+                }
                 is UiEvent.ShowSnackbar -> TODO()
             }
         }

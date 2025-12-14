@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,36 +21,57 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.eduardoomarson.calculadoraimc.data.HistoryDatabaseProvider
-import com.eduardoomarson.calculadoraimc.data.HistoryRepositoryImpl
-import com.eduardoomarson.calculadoraimc.domain.HistoryIMC
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eduardoomarson.calculadoraimc.UiEvent
 import com.eduardoomarson.calculadoraimc.ui.theme.Blue
 import com.eduardoomarson.calculadoraimc.ui.theme.LilasTMB
 import com.eduardoomarson.calculadoraimc.ui.theme.PurpleCalorias
 import com.eduardoomarson.calculadoraimc.ui.theme.PurpleHistorico
 import com.eduardoomarson.calculadoraimc.ui.theme.PurplePeso
 import com.eduardoomarson.calculadoraimc.ui.theme.White
-import com.eduardoomarson.calculadoraimc.ui.theme.feature.history.HistoryEvent
-import com.eduardoomarson.calculadoraimc.ui.theme.feature.imc.IMCEvent
 
 @Composable
 fun HomeScreen(
-    id: Long? = null,
+    onNavigateToIMC: (Long?) -> Unit,
+    onNavigateToHistory: (Long?) -> Unit,
 ) {
-    val context = LocalContext.current.applicationContext
-    val database = HistoryDatabaseProvider.provide(context)
-    val repository = HistoryRepositoryImpl(
-        dao = database.historyDao
+    val viewModel = viewModel<HomeViewModel> {
+        HomeViewModel()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is UiEvent.Navigate<*> -> {
+                    // Sugestão Claude
+                    when (val route = event.route) {
+                        is com.eduardoomarson.calculadoraimc.navigation.IMCRoute -> {
+                            onNavigateToIMC(route.id)
+                        }
+
+                        is com.eduardoomarson.calculadoraimc.navigation.HistoryRoute -> {
+                            onNavigateToHistory(route.id)
+                        }
+                        // Adicione outros casos conforme necessário
+                    }
+                }
+
+                else -> Unit
+            }
+        }
+    }
+    HomeContent(
+        onEvent = viewModel::onEvent
     )
+    // Fim sugestão Claude
 }
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

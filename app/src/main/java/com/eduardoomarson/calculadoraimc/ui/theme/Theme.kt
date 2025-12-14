@@ -18,7 +18,7 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+    primary = Blue,
     secondary = PurpleGrey40,
     tertiary = Pink40
 
@@ -32,6 +32,20 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
+
+// Sugestão de tema pelo Claude
+
+@Composable
+fun CalculadoraIMCUpgradeTheme(
+    content: @Composable () -> Unit
+) {
+    MaterialTheme(
+        colorScheme = LightColorScheme,
+        content = content
+    )
+}
+
+// Fim da sugestão do Claude
 
 @Composable
 fun CalculadoraIMCTheme(

@@ -129,7 +129,6 @@ class IMCViewModel(
 
         viewModelScope.launch {
             repository.insertIMC(date, hour, weight, height, imcDescription)
-            _uiEvent.send(NavigateBack)
             }
         }
 }

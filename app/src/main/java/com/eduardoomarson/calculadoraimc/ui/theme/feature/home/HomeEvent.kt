@@ -5,5 +5,6 @@ sealed interface HomeEvent {
     data class TMBNav(val id : Long?) : HomeEvent
     data class PesoIdealNav(val id : Long?) : HomeEvent
     data class CaloriasNav(val id : Long?) : HomeEvent
+
     data class HistoryNav(val id : Long?) : HomeEvent
 }
