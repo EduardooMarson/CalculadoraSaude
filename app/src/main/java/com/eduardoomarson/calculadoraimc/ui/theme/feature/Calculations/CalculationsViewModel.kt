@@ -84,9 +84,11 @@ class CalculationsViewModel(
                 val imc = weight / ((height / 100.0) * (height / 100.0))
                 val description = when {
                     imc < 18.5 -> "Abaixo do peso"
-                    imc < 25.0 -> "Peso normal"
-                    imc < 30.0 -> "Sobrepeso"
-                    else -> "Obesidade"
+                    imc in 18.5..24.9 -> "Peso Normal"
+                    imc in 25.0..29.9 -> "Sobrepeso"
+                    imc in 30.0..34.9 -> "Obesidade (Grau I)"
+                    imc in 35.0..39.9 -> "Obesidade Severa (Grau II)"
+                    else -> "Obesidade Mórbida (Grau III)"
                 }
                 _state.value = s.copy(
                     imcDescription = "IMC: ${"%.1f".format(imc)}\n$description",

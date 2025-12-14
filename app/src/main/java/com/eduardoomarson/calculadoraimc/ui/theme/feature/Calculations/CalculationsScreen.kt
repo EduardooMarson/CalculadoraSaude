@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.eduardoomarson.calculadoraimc.UiEvent
 import com.eduardoomarson.calculadoraimc.data.HistoryRepository
 import com.eduardoomarson.calculadoraimc.ui.theme.BlackPrimary
 import com.eduardoomarson.calculadoraimc.ui.theme.GraySurface
@@ -60,8 +61,8 @@ fun CalculatorScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(Unit) {
-        // Se quiser mostrar Snackbar em algum UiEvent, adicione aqui
+    LaunchedEffect(Unit){
+
     }
 
     Scaffold(
