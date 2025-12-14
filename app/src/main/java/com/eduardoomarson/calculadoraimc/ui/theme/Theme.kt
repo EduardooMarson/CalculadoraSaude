@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -32,6 +33,11 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
+val OrangePrimary = Color(0xFFFF7A00)
+val BlackPrimary = Color(0xFF111111)
+val WhitePrimary = Color(0xFFFFFFFF)
+val GraySurface = Color(0xFFF2F2F2)
+
 
 // Sugestão de tema pelo Claude
 

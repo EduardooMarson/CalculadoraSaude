@@ -63,6 +63,11 @@ dependencies {
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.benchmark.traceprocessor)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 

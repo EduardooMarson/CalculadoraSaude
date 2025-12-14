@@ -75,6 +75,7 @@ class IMCViewModel(
         }
     }
 
+
     @SuppressLint("DefaultLocale")
     private fun calculateIMC( ){
 
@@ -128,7 +129,6 @@ class IMCViewModel(
         viewModelScope.launch {
             try {
                 repository.insertIMC(date, hour, weight, height, imcDescription)
-                _uiEvent.send(UiEvent.NavigateBack)
             } catch (e: Exception) {
                 _uiEvent.send(UiEvent.ShowSnackbar("Erro ao salvar: ${e.message}"))
             }

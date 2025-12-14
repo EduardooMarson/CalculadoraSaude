@@ -4,30 +4,32 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,16 +43,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eduardoomarson.calculadoraimc.UiEvent
 import com.eduardoomarson.calculadoraimc.data.HistoryDatabaseProvider
 import com.eduardoomarson.calculadoraimc.data.HistoryRepositoryImpl
-import com.eduardoomarson.calculadoraimc.navigation.IMCRoute
-import com.eduardoomarson.calculadoraimc.ui.theme.Blue
-import com.eduardoomarson.calculadoraimc.ui.theme.Red
+import com.eduardoomarson.calculadoraimc.ui.theme.BlackPrimary
+import com.eduardoomarson.calculadoraimc.ui.theme.OrangePrimary
 import com.eduardoomarson.calculadoraimc.ui.theme.White
+import com.eduardoomarson.calculadoraimc.ui.theme.components.HomeSecondaryCard
+import com.eduardoomarson.calculadoraimc.ui.theme.components.NextCalculationCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IMCScreen(
     id: Long? = null,
-    navigateBack: (() -> Unit)? = null
+    navigateBack: (() -> Unit)? = null,
+    navigateToTMB: () -> Unit,
+    navigateHome: () -> Unit
 ) {
     val context = LocalContext.current.applicationContext
     val database = HistoryDatabaseProvider.provide(context)
@@ -94,10 +99,13 @@ fun IMCScreen(
         imcDescription = viewModel.imcDescription,
         isError = viewModel.isError,
         snackbarHostState = snackbarHostState,
-        onEvent = viewModel::onEvent
+        onEvent = viewModel::onEvent,
+        onNavigateToTMB = navigateToTMB,
+        onNavigateToHistory = {
+            navigateHome()
+        }
     )
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IMCContent(
@@ -109,165 +117,180 @@ fun IMCContent(
     isError: Boolean,
     snackbarHostState: SnackbarHostState,
     onEvent: (IMCEvent) -> Unit,
-){
+    onNavigateToTMB: () -> Unit,
+    onNavigateToHistory: () -> Unit
+
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Calculadora de IMC")
+                    Text(
+                        text = "Índice de Massa Corporal",
+                        fontWeight = FontWeight.Bold
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Blue,
+                    containerColor = BlackPrimary,
                     titleContentColor = White
                 )
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
 
-        // Claude
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-        // Fim Claude
-    ) {paddingValues ->
         Column(
             modifier = Modifier
+                .padding(padding)
                 .fillMaxSize()
-                .padding(paddingValues)
-                .background(
-                    color = White
-                )
+                .background(White)
                 .verticalScroll(rememberScrollState())
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                Text(
-                    text = "Altura (cm)",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(20.dp, 100.dp, 0.dp, 0.dp)
-                )
 
-                Text(
-                    text = "Peso (kg)",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(0.dp, 100.dp, 20.dp, 0.dp)
-                )
+            /* ---------- DESCRIÇÃO ---------- */
+            Text(
+                text = "Calcule rapidamente seu IMC com base na sua altura e peso.",
+                fontSize = 14.sp,
+                color = BlackPrimary.copy(alpha = 0.7f),
+                modifier = Modifier.padding(20.dp)
+            )
 
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                OutlinedTextField(
-                    value = height,
-                    onValueChange = { newHeight ->
-                        onEvent(IMCEvent.OnHeightChange(newHeight))
-                    },
-                    label = {
-                        Text(text = "Ex: 165")
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(0.4F)
-                        .padding(20.dp, 0.dp, 0.dp, 20.dp),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.NumberPassword
-                    ),
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = White,
-                        focusedContainerColor = White,
-                        errorContainerColor = White,
-                        focusedLabelColor = Blue,
-                        focusedIndicatorColor = Blue,
-                        cursorColor = Blue,
-                        errorIndicatorColor = Red,
-                    ),
-                    // Sugestão Claude
-                    isError = isError && height.isEmpty()
-                    // Fim Sugestão Claude
-                )
-
-                OutlinedTextField(
-                    value = weight,
-                    onValueChange = { newWeight ->
-                        onEvent(IMCEvent.OnWeightChange(newWeight))
-                    },
-                    label = {
-                        Text(text = "Ex: 70.50")
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(0.7F)
-                        .padding(20.dp, 0.dp, 20.dp, 20.dp),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal
-                    ),
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = White,
-                        focusedContainerColor = White,
-                        errorContainerColor = White,
-                        focusedLabelColor = Blue,
-                        focusedIndicatorColor = Blue,
-                        cursorColor = Blue,
-                        errorIndicatorColor = Red,
-                    ),
-                    //Sugestão Claude
-                    isError = isError && weight.isEmpty()
-                    // Fim sugestão Claude
-                )
-            }
-
-            Button(
-                onClick = {
-                    onEvent(IMCEvent.IMCCalculations)
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Blue
+            /* ---------- ALTURA ---------- */
+            OutlinedTextField(
+                value = height,
+                onValueChange = { onEvent(IMCEvent.OnHeightChange(it)) },
+                label = { Text("Altura (cm)") },
+                placeholder = { Text("Ex: 170") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                isError = isError && height.isEmpty(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = OrangePrimary,
+                    focusedLabelColor = OrangePrimary,
+                    cursorColor = OrangePrimary,
+                    unfocusedBorderColor = BlackPrimary.copy(alpha = 0.4f)
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp)
-                    .padding(50.dp)
+                    .padding(horizontal = 20.dp)
+            )
+
+            /* ---------- PESO ---------- */
+            OutlinedTextField(
+                value = weight,
+                onValueChange = { onEvent(IMCEvent.OnWeightChange(it)) },
+                label = { Text("Peso (kg)") },
+                placeholder = { Text("Ex: 70.5") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                isError = isError && weight.isEmpty(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = OrangePrimary,
+                    focusedLabelColor = OrangePrimary,
+                    cursorColor = OrangePrimary,
+                    unfocusedBorderColor = BlackPrimary.copy(alpha = 0.4f)
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+            )
+
+            /* ---------- BOTÃO CALCULAR ---------- */
+            Button(
+                onClick = { onEvent(IMCEvent.IMCCalculations) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = OrangePrimary,
+                    contentColor = White
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100 .dp)
+                    .padding(20.dp)
             ) {
                 Text(
-                    text = "CALCULAR",
+                    text = "CALCULAR IMC",
                     fontSize = 18.sp,
-                    color = White,
                     fontWeight = FontWeight.Bold
-                    )
+                )
             }
 
-            if(imcDescription.isNotEmpty()) {
-                Text(
-                    text= imcDescription,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Blue,
-                    textAlign = TextAlign.Center,
+            /* ---------- RESULTADO ---------- */
+            if (imcDescription.isNotEmpty()) {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(10.dp)
-            )
+                        .padding(20.dp)
+                        .background(
+                            color = OrangePrimary.copy(alpha = 0.12f),
+                            shape = RoundedCornerShape(18.dp)
+                        )
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Resultado",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = BlackPrimary
+                    )
+
+                    Text(
+                        text = imcDescription,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = OrangePrimary,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 10.dp)
+                    )
+                }
             }
+
+            /* ---------- PRÓXIMOS PASSOS ---------- */
+            if (imcDescription.isNotEmpty()) {
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Próximos cálculos",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+
+                    NextCalculationCard(
+                        title = "Taxa Metabólica Basal",
+                        subtitle = "Descubra quantas calorias seu corpo gasta",
+                        icon = Icons.Default.LocalFireDepartment,
+                        onClick = onNavigateToTMB
+                    )
+
+                }
+            }
+
+
         }
     }
 }
+
 
 @Preview
 @Composable
 private fun IMCScreenPreview() {
     IMCContent(
-        date= "",
+        date = "",
         hour = "",
         height = "",
         weight = "",
         imcDescription = "",
         isError = false,
         snackbarHostState = SnackbarHostState(),
-        onEvent = { }
+        onEvent = { },
+        onNavigateToTMB = TODO(),
+        onNavigateToHistory = TODO()
     )
 }
