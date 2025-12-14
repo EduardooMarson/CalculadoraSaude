@@ -24,9 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eduardoomarson.calculadoraimc.domain.History
-import com.eduardoomarson.calculadoraimc.domain.HistoryIMC
 import com.eduardoomarson.calculadoraimc.domain.history1
-import com.eduardoomarson.calculadoraimc.domain.historyIMC1
+
 
 
 @Composable

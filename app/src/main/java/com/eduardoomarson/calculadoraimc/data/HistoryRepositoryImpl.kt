@@ -1,7 +1,6 @@
 package com.eduardoomarson.calculadoraimc.data
 
 import com.eduardoomarson.calculadoraimc.domain.History
-import com.eduardoomarson.calculadoraimc.domain.HistoryIMC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

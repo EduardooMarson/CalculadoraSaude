@@ -41,7 +41,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eduardoomarson.calculadoraimc.UiEvent
 import com.eduardoomarson.calculadoraimc.data.HistoryDatabaseProvider
 import com.eduardoomarson.calculadoraimc.data.HistoryRepositoryImpl
-import com.eduardoomarson.calculadoraimc.navigation.IMCRoute
 import com.eduardoomarson.calculadoraimc.ui.theme.Blue
 import com.eduardoomarson.calculadoraimc.ui.theme.Red
 import com.eduardoomarson.calculadoraimc.ui.theme.White

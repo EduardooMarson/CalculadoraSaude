@@ -21,3 +21,8 @@ val PurplePeso = Color(0xFF9162F6)
 val PurpleCalorias = Color(0xFFC389FB)
 
 val PurpleHistorico = Color(0xFFF5B0FF)
+
+val OrangePrimary = Color(0xFFFF7A00)
+val BlackPrimary = Color(0xFF111111)
+val WhitePrimary = Color(0xFFFFFFFF)
+val GraySurface = Color(0xFFF2F2F2)
