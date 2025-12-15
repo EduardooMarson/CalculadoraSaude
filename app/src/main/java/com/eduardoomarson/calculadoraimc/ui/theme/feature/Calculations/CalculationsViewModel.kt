@@ -10,6 +10,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+// Criação de data class sugerida pela LLM
+
 data class CalculationsState(
     val calculationType: CalculationsType = CalculationsType.IMC,
     val height: String = "",
@@ -33,19 +35,27 @@ data class CalculationsState(
 class CalculationsViewModel(
     private val repository: HistoryRepository
 ) : ViewModel() {
+
+    /*---- Sugestão Claude -----*/
+    /* --- Prompt: Poderia propor melhorias no código em anexo? ---*/
+    // Uso de uma variável estado state que contenha todos os parâmetros ao invés de
+    // usar mutableStateOf para cada parâmetro, como inicialmente.
+
+    /* --- início de trecho adaptado ----- */
     private val _state = mutableStateOf(CalculationsState())
     val state: State<CalculationsState> = _state
 
+    /* ---- fim trecho adaptado ---*/
     fun onEvent(event: CalculationsEvent) {
         when (event) {
-            is CalculationsEvent.SetCalculationType -> {
+            is CalculationsEvent.SetCalculationType -> { // Trecho adaptado
                 _state.value = _state.value.copy(
                     calculationType = event.type,
                     isError = false
                 )
             }
             is CalculationsEvent.OnHeightChange -> {
-                _state.value = _state.value.copy(height = event.value)
+                _state.value = _state.value.copy(height = event.value) // Sugestão de uso de copy
             }
             is CalculationsEvent.OnWeightChange -> {
                 _state.value = _state.value.copy(weight = event.value)
@@ -60,10 +70,10 @@ class CalculationsViewModel(
                 _state.value = _state.value.copy(activityLevel = event.level)
             }
             CalculationsEvent.Calculate -> {
-                calculateCurrent()
+                calculateCurrent() // Sugestão de função mais genérica para cálculos
             }
             is CalculationsEvent.SaveAndNavigateHome -> {
-                saveToDatabase(event.onSuccess)
+                saveToDatabase(event.onSuccess) // Sugestão de função mais genérica para salvar
             }
         }
     }
@@ -71,12 +81,12 @@ class CalculationsViewModel(
     private fun calculateCurrent() {
         val s = _state.value
         val height = s.height.toDoubleOrNull()
-        val weight = s.weight.toDoubleOrNull()
+        val weight = s.weight.replace(",", ".").toDoubleOrNull()
         val age = s.age.toIntOrNull()
 
         when (s.calculationType) {
             CalculationsType.IMC -> {
-                if (height == null || weight == null || height <= 0 || weight <= 0) {
+                if (height == null || weight == null || height !in 50.0..250.0 || weight !in 20.0..300.0) {
                     _state.value = s.copy(isError = true)
                     return
                 }
@@ -97,11 +107,11 @@ class CalculationsViewModel(
             }
 
             CalculationsType.TMB -> {
-                if (height == null || weight == null || height <= 0 || weight <= 0) {
+                if (height == null || weight == null || height !in 50.0..250.0 || weight !in 20.0..300.0) {
                     _state.value = s.copy(isError = true)
                     return
                 }
-                if (age == null || age <= 0) {
+                if (age == null || age <= 0 || age >= 150) {
                     _state.value = s.copy(isError = true)
                     return
                 }
@@ -129,7 +139,7 @@ class CalculationsViewModel(
             }
 
             CalculationsType.PESO_IDEAL -> {
-                if (height == null || height <= 0) {
+                if (height == null || height !in 50.0..250.0) {
                     _state.value = s.copy(isError = true)
                     return
                 }
@@ -184,6 +194,7 @@ class CalculationsViewModel(
                 repository.insert(
                     date = currentDate,
                     hour = currentHour,
+                    /* --- Adaptado pela LLM - uso de takeIf ---*/
                     gender = s.gender.takeIf { it.isNotEmpty() },
                     age = s.age.takeIf { it.isNotEmpty() },
                     height = s.height,
@@ -203,7 +214,6 @@ class CalculationsViewModel(
                 onSuccess()
             } catch (e: Exception) {
                 _state.value = _state.value.copy(isSaving = false)
-                // TODO: Tratar erro se necessário
             }
         }
     }

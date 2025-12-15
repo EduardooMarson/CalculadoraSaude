@@ -20,23 +20,3 @@ data class HistoryEntity(
     val pesoIdealDescription: String?,
     val caloriaDiariaDescription: String?
 )
-@Entity(tableName = "historiesImc")
-data class HistoryIMCEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val date: String,
-    val hour: String,
-    val weight: String,
-    val height: String,
-    val imcDescription: String,
-)
-
-@Entity(tableName = "historiesPesoIdeal")
-data class HistoryPesoIdealEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val date: String,
-    val hour: String,
-    val gender: String,
-    val weight: String,
-    val height: String,
-    val pesoIdealDescription: String,
-)
