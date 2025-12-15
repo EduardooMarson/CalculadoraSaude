@@ -12,8 +12,6 @@ import com.eduardoomarson.calculadoraimc.ui.theme.feature.home.HomeScreen
 
 import kotlinx.serialization.Serializable
 
-/* ---------- ROTAS ---------- */
-
 @Serializable
 object HomeRoute
 
@@ -27,14 +25,12 @@ data class IMCRoute(val id: Long? = null)
 data class TMBRoute(val id: Long? = null)
 
 @Serializable
-object CalculationsRoute
+object CalculationsRoute // Sugestão da LLM usar CalculationsRoute como object
 
-
-/* ---------- NAV HOST ---------- */
 
 @Composable
 fun CalculationsNavHost(
-    repository: HistoryRepository // Injete o repository aqui
+    repository: HistoryRepository
 ) {
     val navController = rememberNavController()
 
@@ -43,7 +39,6 @@ fun CalculationsNavHost(
         startDestination = HomeRoute
     ) {
 
-        /* ---------- HOME ---------- */
         composable<HomeRoute> {
             HomeScreen(
                 onNavigateToIMC = { id -> navController.navigate(IMCRoute(id)) },
@@ -54,16 +49,25 @@ fun CalculationsNavHost(
             )
         }
 
-        /* ---------- CALCULATIONS (Nova tela unificada) ---------- */
+        /* ---------- Sugestão Claude ---------------*/
+        /* Prompt: Poderia analisar o código atual de CalculationsNavHost e sugerir mudanças
+                   de melhorias?
+         */
         composable<CalculationsRoute> {
             CalculatorScreen(
                 navigateBack = {
                     navController.popBackStack()
                 },
                 navigateHome = {
+                    /* ---- trecho adaptado pela LLM utilizada -----*/
+                    // PopBackStack iria retornar uma tela simplesmente
+                    // Uso de popUpTo mais adequeado nesse cenário
+                    // inclusive true para limpar estados antigos
                     navController.navigate(HomeRoute) {
                         popUpTo(HomeRoute) { inclusive = true }
                     }
+
+                    /* --- fim do trecho adaptado pela LLM --------*/
                 },
                 onNavigateToIdealWeight = {
                 },
@@ -71,8 +75,6 @@ fun CalculationsNavHost(
             )
         }
 
-
-        /* ---------- HISTÓRICO ---------- */
         composable<HistoryRoute> { backStackEntry ->
             val route = backStackEntry.toRoute<HistoryRoute>()
 

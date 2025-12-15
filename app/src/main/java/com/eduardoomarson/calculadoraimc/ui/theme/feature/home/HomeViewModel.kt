@@ -17,9 +17,15 @@ class HomeViewModel : ViewModel() {
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
+
+    /* -- Sugestão Claude -----*/
+    /*  Prompt : Estou usando Jetpack Compose com Navigation.
+                Quero disparar um evento de UI que navegue da Home
+                para uma tela unificada de cálculos */
     fun onEvent(event: HomeEvent) {
         when (event) {
 
+            /* ---- Trecho adaptado pela LLM ----*/
             HomeEvent.OpenCalculations -> {
                 viewModelScope.launch {
                     _uiEvent.send(
@@ -27,6 +33,7 @@ class HomeViewModel : ViewModel() {
                     )
                 }
             }
+            /* ---- Fim de trecho adaptado pela LLM -----*/
 
             is HomeEvent.IMCNav -> {
                 viewModelScope.launch {

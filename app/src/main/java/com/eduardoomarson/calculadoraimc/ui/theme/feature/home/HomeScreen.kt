@@ -67,7 +67,6 @@ fun HomeScreen(
     HomeContent(
         onEvent = viewModel::onEvent
     )
-    // Fim sugestão Claude
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -108,6 +107,9 @@ fun HomeContent(
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            /* ---------- Sugestãp Claude ---------- */
+            /* Prompt: Poderia sugerir melhorias na tela de Home? --*/
+            // Foi sugerido uso de Cards, criação de modelo de cards pela LLM
             /* ---------- CARD (DESTAQUE) ---------- */
             HomePrimaryCard(
                 title = "Calcular",

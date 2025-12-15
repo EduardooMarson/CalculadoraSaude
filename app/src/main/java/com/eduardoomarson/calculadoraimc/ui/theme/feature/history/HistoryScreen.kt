@@ -54,18 +54,19 @@ fun HistoryScreen(
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { uiEvent ->
             when (uiEvent) {
-                is UiEvent.Navigate<*> -> TODO()
+                is UiEvent.Navigate<*> -> {}
                 UiEvent.NavigateBack -> {
-                    //navigateBack?.invoke()
+                    navigateBack?.invoke()
                 }
-                is UiEvent.ShowSnackbar -> TODO()
+                is UiEvent.ShowSnackbar -> {}
             }
         }
     }
 
     HistoryContent(
         histories = histories,
-        onEvent = viewModel::onEvent
+        onEvent = viewModel::onEvent,
+        onNavigateBack = navigateBack
     )
 }
 
@@ -75,6 +76,7 @@ fun HistoryScreen(
 fun HistoryContent(
     histories: List<History>,
     onEvent: (HistoryEvent) -> Unit,
+    onNavigateBack: (() -> Unit)? = null,
 ) {
     Scaffold(
         topBar = {
@@ -146,6 +148,7 @@ fun HistoryPreview() {
                 caloriaDiariaDescription = null
             )
         ),
-        onEvent = {}
+        onEvent = {},
+        onNavigateBack = {}
     )
 }
