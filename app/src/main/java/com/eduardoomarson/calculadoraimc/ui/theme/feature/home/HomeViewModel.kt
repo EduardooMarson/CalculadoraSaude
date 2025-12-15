@@ -33,13 +33,14 @@ class HomeViewModel : ViewModel() {
                     )
                 }
             }
-            /* ---- Fim de trecho adaptado pela LLM -----*/
 
             is HomeEvent.IMCNav -> {
                 viewModelScope.launch {
                     _uiEvent.send(UiEvent.Navigate(IMCRoute(event.id)))
                 }
             }
+
+            /* ---- Fim de trecho adaptado pela LLM -----*/
 
             is HomeEvent.TMBNav -> {
                 viewModelScope.launch {

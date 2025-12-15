@@ -44,6 +44,7 @@ import com.eduardoomarson.calculadoraimc.data.HistoryRepository
 import com.eduardoomarson.calculadoraimc.ui.theme.BlackPrimary
 import com.eduardoomarson.calculadoraimc.ui.theme.GraySurface
 import com.eduardoomarson.calculadoraimc.ui.theme.OrangePrimary
+import com.eduardoomarson.calculadoraimc.ui.theme.Red
 import com.eduardoomarson.calculadoraimc.ui.theme.White
 import com.eduardoomarson.calculadoraimc.ui.theme.components.ActivityButton
 import com.eduardoomarson.calculadoraimc.ui.theme.components.GenderButton
@@ -62,7 +63,21 @@ fun CalculatorScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit){
+        viewModel.uiEvent.collect{ uiEvent ->
+            when(uiEvent){
+                is UiEvent.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(
+                        message = uiEvent.message
+                    )
+                }
+                is UiEvent.Navigate<*> -> {
 
+                }
+                UiEvent.NavigateBack -> {
+                    navigateBack?.invoke()
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -111,12 +126,13 @@ fun CalculatorScreen(
                 label = { Text(text = "Altura (cm)") },
                 placeholder = { Text(text = "Ex: 170") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                isError = state.isError && state.height.isEmpty(),
+                isError = state.isError,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = OrangePrimary,
                     focusedLabelColor = OrangePrimary,
                     cursorColor = OrangePrimary,
-                    unfocusedBorderColor = BlackPrimary.copy(alpha = 0.4f)
+                    unfocusedBorderColor = BlackPrimary.copy(alpha = 0.4f),
+                    errorLabelColor = Red
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -131,12 +147,13 @@ fun CalculatorScreen(
                     label = { Text("Peso (kg)") },
                     placeholder = { Text("Ex: 70.5") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    isError = state.isError && state.weight.isEmpty(),
+                    isError = state.isError,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = OrangePrimary,
                         focusedLabelColor = OrangePrimary,
                         cursorColor = OrangePrimary,
-                        unfocusedBorderColor = BlackPrimary.copy(alpha = 0.4f)
+                        unfocusedBorderColor = BlackPrimary.copy(alpha = 0.4f),
+                        errorLabelColor = Red
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -152,12 +169,13 @@ fun CalculatorScreen(
                     label = { Text("Idade") },
                     placeholder = { Text("Ex: 25") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    isError = state.isError && state.age.isEmpty(),
+                    isError = state.isError,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = OrangePrimary,
                         focusedLabelColor = OrangePrimary,
                         cursorColor = OrangePrimary,
-                        unfocusedBorderColor = BlackPrimary.copy(alpha = 0.4f)
+                        unfocusedBorderColor = BlackPrimary.copy(alpha = 0.4f),
+                        errorLabelColor = Red
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )

@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
 import androidx.lifecycle.viewModelScope
+import com.eduardoomarson.calculadoraimc.UiEvent
 import com.eduardoomarson.calculadoraimc.data.HistoryRepository
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -46,6 +49,10 @@ class CalculationsViewModel(
     val state: State<CalculationsState> = _state
 
     /* ---- fim trecho adaptado ---*/
+
+    private val _uiEvent = Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
+
     fun onEvent(event: CalculationsEvent) {
         when (event) {
             is CalculationsEvent.SetCalculationType -> { // Trecho adaptado
@@ -86,9 +93,29 @@ class CalculationsViewModel(
 
         when (s.calculationType) {
             CalculationsType.IMC -> {
-                if (height == null || weight == null || height !in 50.0..250.0 || weight !in 20.0..300.0) {
+                if (height == null || weight == null) {
                     _state.value = s.copy(isError = true)
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar("Preencha todos os campos!"))
+                    }
                     return
+                }
+
+                if (height !in 50.0..250.0) {
+                    _state.value = s.copy(isError = true)
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar("Altura deve estar entre 50cm e 250cm!"))
+                    }
+                    return
+                }
+
+                if (weight !in 2.0..300.0) {
+                    _state.value = s.copy(isError = true)
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar("Peso deve estar entre 20 kg e 300 kg!"))
+                    }
+                    return
+
                 }
 
                 val imc = weight / ((height / 100.0) * (height / 100.0))
@@ -107,12 +134,41 @@ class CalculationsViewModel(
             }
 
             CalculationsType.TMB -> {
-                if (height == null || weight == null || height !in 50.0..250.0 || weight !in 20.0..300.0) {
+                if (height == null || weight == null) {
                     _state.value = s.copy(isError = true)
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar("Preencha todos os campos!"))
+                    }
                     return
                 }
-                if (age == null || age <= 0 || age >= 150) {
+
+                if (height !in 50.0..250.0) {
                     _state.value = s.copy(isError = true)
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar("Altura deve estar entre 50cm e 250cm!"))
+                    }
+                    return
+                }
+
+                if (weight !in 2.0..300.0) {
+                    _state.value = s.copy(isError = true)
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar("Peso deve estar entre 20 kg e 300 kg!"))
+                    }
+                    return
+                }
+                if (age == null) {
+                    _state.value = s.copy(isError = true)
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar("Idade deve ser ínformada!"))
+                    }
+                    return
+                }
+                if (age !in 0..<150) {
+                    _state.value = s.copy(isError = true)
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar("Idade deve estar entre 0 e 150 anos!"))
+                    }
                     return
                 }
 
@@ -139,8 +195,19 @@ class CalculationsViewModel(
             }
 
             CalculationsType.PESO_IDEAL -> {
-                if (height == null || height !in 50.0..250.0) {
+                if (height == null) {
                     _state.value = s.copy(isError = true)
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar("Altura deve ser informada!"))
+                    }
+                    return
+                }
+
+                if (height !in 50.0..250.0) {
+                    _state.value = s.copy(isError = true)
+                    viewModelScope.launch {
+                        _uiEvent.send(UiEvent.ShowSnackbar("Altura deve estar entre 50cm e 250cm!"))
+                    }
                     return
                 }
 
