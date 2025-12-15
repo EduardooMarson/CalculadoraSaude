@@ -118,7 +118,7 @@ A classificação do IMC segue os critérios estabelecidos pela OMS.
 
 ---
 
-### 6.2 Peso Ideal – Fórmula de Devine (1974)
+### 6.2 Peso Ideal – Fórmula de Devine 
 
 A fórmula de Devine estima o peso ideal a partir da altura e do sexo do indivíduo.
 Para este indicador tem-se o peso em quilogramas (kg) e a altura previamente fornecida em centímetros convertida para polegadas.
@@ -140,7 +140,7 @@ Onde:
 
 ---
 
-### 6.3 Taxa Metabólica Basal – Harris–Benedict (Equação Revisada)
+### 6.3 Taxa Metabólica Basal – Harris–Benedict 
 
 A Taxa Metabólica Basal representa a quantidade mínima de energia necessária para manter as funções vitais do organismo em repouso.
 
